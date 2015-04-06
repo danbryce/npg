@@ -1,0 +1,5 @@
+#!/bin/bash
+cd debug
+make -j1 parser
+make -j4 colin-clp
+make -j4 dreal-clp

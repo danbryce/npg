@@ -1,0 +1,24 @@
+#!/bin/bash
+
+cd debug
+CXX=gcc-4.8
+CC=gcc-4.8
+CLP_INCLUDES=../../coin-Clp/include
+CLP_LIBRARIES=../../coin-Clp/lib/libClp.dylib 
+CLP_LIBRARIES1=../../coin-Clp/lib/libCoinUtils.dylib 
+CLP_LIBRARIES2=../../coin-Clp/lib/libOsi.dylib
+CLP_LIBRARIES3=
+CGL_INCLUDES=../../coin-Cgl/include 
+CGL_LIBRARIES=../../coin-Cgl/lib/libCgl.dylib 
+#../../coin-Cgl/lib/libCoinUtils.dylib ../../coin-Cgl/lib/libOsi.dylib
+OSICLP_LIBRARIES=../../coin-Clp/lib/libOsiClp.dylib
+COINUTILS_LIBRARIES=../../coin-CoinUtils/lib/libCoinUtils.dylib 
+COINUTILS_INCLUDES=../../coin-CoinUtils/include
+OSI_LIBRARIES=../../coin-Osi/lib/libOsi.dylib
+OSI_INCLUDES=../../coin-Osi/include/coin
+CBC_INCLUDES=../../coin-Cbc/include
+CBC_LIBRARIES=../../coin-Cbc/lib/libCbc.dylib 
+#../coin-Cbc/lib/libOsiClp.dylib ../../coin-Cbc/lib/libCoinUtils.dylib ../../coin-Cbc/lib/libOsiCbc.dylib 
+CBC_SOLVER_LIBRARIES=../../coin-Cbc/lib/libCbcSolver.dylib
+cmake -DCMAKE_BUILD_TYPE=Debug ../src -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_C_COMPILER=$CC -DCLP_INCLUDES=$CLP_INCLUDES  -DCLP_LIBRARIES=$CLP_LIBRARIES -DCGL_INCLUDES=$CGL_INCLUDES -DCGL_LIBRARIES=$CGL_LIBRARIES -DCOINUTILS_LIBRARIES=$COINUTILS_LIBRARIES -DCBC_INCLUDES=$CBC_INCLUDES -DCBC_LIBRARY=$CBC_LIBRARIES  -DCBC_SOLVER_LIBRARY=$CBC_SOLVER_LIBRARIES -DOSI_LIBRARIES=$OSI_LIBRARIES -DOSI_INCLUDES=$OSI_INCLUDES -DOSICLP_LIBRARIES=$OSICLP_LIBRARIES -DCOINUTILS_INCLUDES=$COINUTILS_INCLUDES 
+# -DCLP1_LIBRARIES=$CLP_LIBRARIES1 -DCLP2_LIBRARIES=$CLP_LIBRARIES2 -DCLP3_LIBRARIES=$CLP_LIBRARIES3
