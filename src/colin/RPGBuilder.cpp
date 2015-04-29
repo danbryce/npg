@@ -3239,8 +3239,7 @@ void RPGBuilder::initialise()
 
     findSemaphoreFacts();
 
-
-    
+   
     {
         list<pair<int, VAL::time_spec> >::iterator plaItr = preconditionlessActions.begin();
         const list<pair<int, VAL::time_spec> >::iterator plaEnd = preconditionlessActions.end();
@@ -3262,13 +3261,12 @@ void RPGBuilder::initialise()
 
     }
 
-
     buildMetric(current_analysis->the_problem->metric);
     
 
     buildDurations(fixedDurationExpressions, minDurationExpressions, maxDurationExpressions);
     findSelfMutexes();
-    doSomeUsefulMetricRPGInference();
+    doSomeUsefulMetricRPGInference();      
     #ifdef POPF3ANALYSIS
     NumericAnalysis::findVariableBounds();
     #endif
@@ -3308,6 +3306,7 @@ void RPGBuilder::initialise()
         }
     }
     #endif
+    
 };
 
 

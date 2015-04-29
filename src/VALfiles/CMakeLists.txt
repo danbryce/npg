@@ -32,7 +32,7 @@ set(validate_SRCS
 add_executable(validate ${validate_SRCS})
 
 target_link_libraries(validate
-        ParsePDDL
+        ParsePDDL stdc++
 )
 
 set(parser_SRCS

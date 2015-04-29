@@ -425,13 +425,15 @@ public:
 
     };
 
+    static HTrio calculateHeuristic(ExtendedMinimalState & theState, ExtendedMinimalState * prevState, set<int> & goals, set<int> & goalFluents, ParentData * const incrementalData, list<ActionSegment> & helpfulActions, list<FFEvent> & header, list<FFEvent> & now, const int & stepID, bool considerCache, map<double, list<pair<int, int> > > * justApplied = 0, double tilFrom = 0.001);
+
+
 private:
 
     static bool scheduleToMetric;
     static bool skipRPG;
 
     static HTrio calculateHeuristicAndCompressionSafeSchedule(ExtendedMinimalState & theState, ExtendedMinimalState * prevState, set<int> & goals, set<int> & goalFluents, list<ActionSegment> & helpfulActions, list<FFEvent> & header, list<FFEvent> & now, const int & stepID, map<double, list<pair<int, int> > > * justApplied = 0, double tilFrom = 0.001);
-    static HTrio calculateHeuristic(ExtendedMinimalState & theState, ExtendedMinimalState * prevState, set<int> & goals, set<int> & goalFluents, ParentData * const incrementalData, list<ActionSegment> & helpfulActions, list<FFEvent> & header, list<FFEvent> & now, const int & stepID, bool considerCache, map<double, list<pair<int, int> > > * justApplied = 0, double tilFrom = 0.001);
     static HTrio calculateHeuristicAndSchedule(ExtendedMinimalState & theState, ExtendedMinimalState * prevState, set<int> & goals, set<int> & goalFluents, ParentData * const p, list<ActionSegment> & helpfulActions, list<FFEvent> & header, list<FFEvent> & now, const int & stepID, bool considerCache = false, map<double, list<pair<int, int> > > * justApplied = 0, double tilFrom = 0.001);
 
     static ExtendedMinimalState * applyActionToState(ActionSegment & theAction, const ExtendedMinimalState & parent, const list<FFEvent> & plan);
@@ -505,11 +507,118 @@ public:
     static Solution search(bool & reachedGoal);
 
     static void getMyHeuristic(bool & reachedGoal);
+    static void evaluateState(auto_ptr<SearchQueueItem> & succ, ExtendedMinimalState & state, ExtendedMinimalState * prevState, set<int> & goals, set<int> & goalFluents, ParentData * const incrementalData, list<ActionSegment> & helpfulActionsExport, const ActionSegment & actID, list<FFEvent> & header);
 
     static list<FFEvent> * doBenchmark(bool & reachedGoal, list<FFEvent> * soln, const bool doLoops = true);
     static list<FFEvent> * reprocessPlan(list<FFEvent> * soln, TemporalConstraints * cons);
 };
 
+
+class SearchQueueItem
+{
+
+private:
+    ExtendedMinimalState * internalState;
+    bool ownState;
+
+public:
+#ifdef STATEHASHDEBUG
+    bool mustNotDeleteState;
+#endif
+
+
+#ifndef NDEBUG
+    const FFEvent* internal_matchesHeader;
+#endif
+    
+    inline ExtendedMinimalState * state() {
+        return internalState;
+    }
+
+    list<FFEvent> plan;
+
+    list<ActionSegment> helpfulActions;
+    FF::HTrio heuristicValue;
+
+    SearchQueueItem()
+            : internalState(0), ownState(false) {
+#ifdef STATEHASHDEBUG
+        mustNotDeleteState = false;
+#endif
+        #ifndef NDEBUG
+        internal_matchesHeader = 0;
+        #endif
+        
+    }
+
+
+
+    /**
+     *  Create a search queue item for the specified state.
+     *
+     *  @param sIn              The state to store in the search queue item
+     *  @param clearIfDeleted   If <code>true</code>, mark that <code>sIn</code> should be deleted
+     *                          if the search queue item is deleted (unless <code>releaseState()</code>
+     *                          is called first).
+     */
+    SearchQueueItem(ExtendedMinimalState * const sIn, const bool clearIfDeleted)
+            : internalState(sIn), ownState(clearIfDeleted) {
+#ifdef STATEHASHDEBUG
+        mustNotDeleteState = false;
+#endif
+        #ifndef NDEBUG
+        internal_matchesHeader = 0;
+        #endif
+        
+    }
+
+    ~SearchQueueItem() {
+        if (ownState) {
+#ifdef STATEHASHDEBUG
+            assert(!mustNotDeleteState);
+#endif
+            delete internalState;
+        }
+    }
+
+
+    /**
+     *  Return the state held in this search queue item, flagging that it should not be deleted by
+     *  the search queue item's destructor.
+     *
+     *  @return The state held in this search queue item
+     */
+    ExtendedMinimalState * releaseState() {
+        assert(ownState);
+        ownState = false;
+        return internalState;
+    }
+
+
+    void printPlan() {
+        if (Globals::globalVerbosity & 2) {
+            list<FFEvent>::iterator planItr = plan.begin();
+            const list<FFEvent>::iterator planEnd = plan.end();
+
+            for (int i = 0; planItr != planEnd; ++planItr, ++i) {
+                if (!planItr->getEffects) cout << "(( ";
+                if (planItr->action) {
+                    cout << i << ": " << *(planItr->action) << ", " << (planItr->time_spec == VAL::E_AT_START ? "start" : "end");
+                } else if (planItr->time_spec == VAL::E_AT) {
+                    cout << i << ": TIL " << planItr->divisionID;
+
+                } else {
+                    cout << i << ": null node!";
+                    assert(false);
+                }
+                if (!planItr->getEffects) cout << " ))";
+                cout << " at " << planItr->lpMinTimestamp;
+                cout << "\n";
+            }
+        }
+    }
+
+};
 
 };
 

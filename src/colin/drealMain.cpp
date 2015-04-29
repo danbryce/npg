@@ -393,12 +393,12 @@ int main(int argc, char * argv[])
     #ifdef TOTALORDERSTATES
     MinimalState::setTransformer(new TotalOrderTransformer());
     #else    
-    if (Globals::totalOrder) {
-        MinimalState::setTransformer(new TotalOrderTransformer());
-    } else {
-        MinimalState::setTransformer(new PartialOrderTransformer());
-    }
-    #endif
+     if (Globals::totalOrder) {
+         MinimalState::setTransformer(new TotalOrderTransformer());
+     } else {
+         MinimalState::setTransformer(new PartialOrderTransformer());
+     }
+     #endif
 
     #ifdef ENABLE_DEBUGGING_HOOKS    
     if (debugPreprocessing) {
