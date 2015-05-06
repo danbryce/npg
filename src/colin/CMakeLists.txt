@@ -10,22 +10,21 @@ set(DOXYFILE_TARGET_SUFFIX colin)
 include(UseDoxygen OPTIONAL)
 
 
-find_package(Clp)
-find_package(CoinUtils)
-find_package(Cbc)
-find_package(Cgl)
-find_package(OSI)
+#find_package(Clp)
+#find_package(CoinUtils)
+#find_package(Cbc)
+#find_package(Cgl)
+#find_package(OSI)
 
 
-set(CMAKE_CXX_FLAGS "-std=c++11 -Wall ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "-std=c++11 -Wall ${CMAKE_CXX_FLAGS} -L${CLP_LIB_PATH}")
 
 if(STATIC_COLIN)
 set(CMAKE_CXX_LINK_FLAGS "-stdlib=libc++ -static ${CMAKE_CXX_LINK_FLAGS}")
 endif(STATIC_COLIN)
 
 include_directories(${val_SOURCE_DIR} ${val_SOURCE_DIR}/parsing
-${val_BINARY_DIR} ${CLP_INCLUDES}/coin ${CBC_INCLUDES}/coin
-${CPLEX_INCLUDES} ${OSI_INCLUDES} ${CONCERT_INCLUDES}  ${GSL_INCLUDES})
+${val_BINARY_DIR} ${CONCERT_INCLUDES}  ${GSL_INCLUDES})
 
 set(colin_build_srcs
     compressionsafescheduler.cpp
@@ -45,25 +44,21 @@ set(colin_build_srcs
     solver.cpp)
 
 add_library(ColinCommon STATIC ${colin_build_srcs})
-target_link_libraries(ColinCommon ParsePDDL Inst )
+target_link_libraries(ColinCommon ParsePDDL Inst Cgl Cbc )
 SET_TARGET_PROPERTIES(ColinCommon PROPERTIES COMPILE_FLAGS "-DTOTALORDERSTATES -DPOPF3ANALYSIS")
 
 add_library(colin STATIC  ${colin_build_srcs} solver-clp.cpp drealMain.cpp)
 SET_TARGET_PROPERTIES(colin PROPERTIES COMPILE_FLAGS
 "-DTOTALORDERSTATES -DPOPF3ANALYSIS")
 target_link_libraries(colin  ColinCommon
-        ${CBC_SOLVER_LIBRARY} ${CBC_LIBRARY} ${CGL_LIBRARIES}
-        ${OSICLP_LIBRARIES} ${OSI_LIBRARIES} ${CLP_LIBRARIES}
-        ${COINUTILS_LIBRARIES} bz2 z stdc++)
+        bz2 z stdc++ ${COLIN_LIBS} )
 
 ADD_EXECUTABLE(dreal-clp drealMain.cpp solver-clp.cpp)
 SET_TARGET_PROPERTIES(dreal-clp PROPERTIES COMPILE_FLAGS
 "-DTOTALORDERSTATES -DPOPF3ANALYSIS")
     target_link_libraries(dreal-clp
         ColinCommon
-        ${CBC_SOLVER_LIBRARY} ${CBC_LIBRARY} ${CGL_LIBRARIES}
-        ${OSICLP_LIBRARIES} ${OSI_LIBRARIES} ${CLP_LIBRARIES}
-        ${COINUTILS_LIBRARIES} bz2 z stdc++
+        bz2 z stdc++ Cgl Cbc ClpSolver Clp CoinUtils Osi OsiClp
     )
     SET_TARGET_PROPERTIES(dreal-clp PROPERTIES COMPILE_FLAGS "-DTOTALORDERSTATES -DPOPF3ANALYSIS")
 
