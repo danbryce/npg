@@ -43,22 +43,22 @@ set(colin_build_srcs
     numericanalysis.cpp
     solver.cpp)
 
-add_library(ColinCommon STATIC ${colin_build_srcs})
-target_link_libraries(ColinCommon ParsePDDL Inst Cgl Cbc )
-SET_TARGET_PROPERTIES(ColinCommon PROPERTIES COMPILE_FLAGS "-DTOTALORDERSTATES -DPOPF3ANALYSIS")
+#add_library(ColinCommon STATIC ${colin_build_srcs})
+#target_link_libraries(ColinCommon ParsePDDL Inst Cgl Cbc )
+#SET_TARGET_PROPERTIES(ColinCommon PROPERTIES COMPILE_FLAGS "-DTOTALORDERSTATES -DPOPF3ANALYSIS")
 
 add_library(colin STATIC  ${colin_build_srcs} solver-clp.cpp drealMain.cpp)
 SET_TARGET_PROPERTIES(colin PROPERTIES COMPILE_FLAGS
 "-DTOTALORDERSTATES -DPOPF3ANALYSIS")
-target_link_libraries(colin  ColinCommon
+target_link_libraries(colin  ColinCommon Inst
         bz2 z stdc++ ${COLIN_LIBS} )
 
-ADD_EXECUTABLE(dreal-clp drealMain.cpp solver-clp.cpp)
-SET_TARGET_PROPERTIES(dreal-clp PROPERTIES COMPILE_FLAGS
-"-DTOTALORDERSTATES -DPOPF3ANALYSIS")
-    target_link_libraries(dreal-clp
-        ColinCommon
-        bz2 z stdc++ Cgl Cbc ClpSolver Clp CoinUtils Osi OsiClp
-    )
-    SET_TARGET_PROPERTIES(dreal-clp PROPERTIES COMPILE_FLAGS "-DTOTALORDERSTATES -DPOPF3ANALYSIS")
+#ADD_EXECUTABLE(dreal-clp drealMain.cpp solver-clp.cpp)
+#SET_TARGET_PROPERTIES(dreal-clp PROPERTIES COMPILE_FLAGS
+#"-DTOTALORDERSTATES -DPOPF3ANALYSIS")
+ #   target_link_libraries(dreal-clp
+  #      ColinCommon
+   #     bz2 z stdc++ Cgl Cbc ClpSolver Clp CoinUtils Osi OsiClp
+    #)
+    #SET_TARGET_PROPERTIES(dreal-clp PROPERTIES COMPILE_FLAGS "-DTOTALORDERSTATES -DPOPF3ANALYSIS")
 
